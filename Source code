@@ -1,0 +1,296 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+// CONSTANTS
+const int MAX_BOOKS = 100;
+const int MAX_STUDENTS = 100;
+
+// BOOK CLASS
+class Book {
+public:
+    int id;
+    string title;
+    string author;
+    bool isBorrowed;
+
+    void display() {
+        cout << "Book ID: " << id << endl;
+        cout << "Title: " << title << endl;
+        cout << "Author: " << author << endl;
+        cout << "Status: " << (isBorrowed ? "Unavailable" : "Available") << endl;
+        cout << "-----------------------------\n";
+    }
+};
+
+// STUDENT CLASS
+class Student {
+public:
+    int studentID;
+    string name;
+    bool hasBorrowed;
+    int borrowedBookID;
+
+    void display() {
+        cout << "Student ID: " << studentID << endl;
+        cout << "Name: " << name << endl;
+        if (hasBorrowed)
+            cout << "Borrowed Book ID: " << borrowedBookID << endl;
+        else
+            cout << "Borrowed Book ID: None" << endl;
+        cout << "-----------------------------\n";
+    }
+};
+
+// LIBRARY CLASS
+class Library {
+private:
+    Book books[MAX_BOOKS];
+    Student students[MAX_STUDENTS];
+    int bookCount;
+    int studentCount;
+
+public:
+    Library() {
+        bookCount = 0;
+        studentCount = 0;
+        loadBooks();
+        loadStudents();
+    }
+
+    // ADD BOOK
+    void addBook() {
+        Book b;
+        cout << "Enter Book ID: ";
+        cin >> b.id;
+        cin.ignore();
+
+        cout << "Enter Book Title: ";
+        getline(cin, b.title);
+
+        cout << "Enter Author Name: ";
+        getline(cin, b.author);
+
+        b.isBorrowed = false;
+        books[bookCount++] = b;
+        saveBooks();
+
+        cout << "Book added successfully!\n";
+    }
+
+    void displayBooks() {
+        if (bookCount == 0) {
+            cout << "No books available.\n";
+            return;
+        }
+        for (int i = 0; i < bookCount; i++)
+            books[i].display();
+    }
+
+    // ADD STUDENT
+    void addStudent() {
+        Student s;
+        cout << "Enter Student ID: ";
+        cin >> s.studentID;
+        cin.ignore();
+
+        cout << "Enter Student Name: ";
+        getline(cin, s.name);
+
+        s.hasBorrowed = false;
+        s.borrowedBookID = -1;
+
+        students[studentCount++] = s;
+        saveStudents();
+
+        cout << "Student added successfully!\n";
+    }
+
+    void displayStudents() {
+        if (studentCount == 0) {
+            cout << "No students registered.\n";
+            return;
+        }
+        for (int i = 0; i < studentCount; i++)
+            students[i].display();
+    }
+
+    // BORROW BOOK
+    void borrowBook() {
+        int sid, bid;
+        cout << "Enter Student ID: ";
+        cin >> sid;
+
+        int sIndex = findStudent(sid);
+        if (sIndex == -1) {
+            cout << "Student not found!\n";
+            return;
+        }
+
+        if (students[sIndex].hasBorrowed) {
+            cout << "Student already borrowed a book.\n";
+            return;
+        }
+
+        cout << "Enter Book ID: ";
+        cin >> bid;
+
+        int bIndex = findBook(bid);
+        if (bIndex == -1 || books[bIndex].isBorrowed) {
+            cout << "Book unavailable.\n";
+            return;
+        }
+
+        books[bIndex].isBorrowed = true;
+        students[sIndex].hasBorrowed = true;
+        students[sIndex].borrowedBookID = bid;
+
+        saveBooks();
+        saveStudents();
+
+        cout << "Book issued successfully\n";
+    }
+
+    // RETURN BOOK
+    void returnBook() {
+        int sid;
+        cout << "Enter Student ID: ";
+        cin >> sid;
+
+        int sIndex = findStudent(sid);
+        if (sIndex == -1 || !students[sIndex].hasBorrowed) {
+            cout << "Invalid return\n";
+            return;
+        }
+
+        int bid = students[sIndex].borrowedBookID;
+        int bIndex = findBook(bid);
+        if (bIndex == -1) return;
+
+        books[bIndex].isBorrowed = false;
+        students[sIndex].hasBorrowed = false;
+        students[sIndex].borrowedBookID = -1;
+
+        saveBooks();
+        saveStudents();
+
+        cout << "Book returned successfully\n";
+    }
+
+    // FILE HANDLING
+    void saveBooks() {
+        ofstream fout("books.csv");
+        for (int i = 0; i < bookCount; i++)
+            fout << books[i].id << "," << books[i].title << ","
+                 << books[i].author << "," << books[i].isBorrowed << endl;
+        fout.close();
+    }
+
+    void loadBooks() {
+        ifstream fin("books.csv");
+        if (!fin) return;
+
+        string line;
+        while (getline(fin, line)) {
+            if (line.empty()) continue;
+
+            stringstream ss(line);
+            string token;
+
+            getline(ss, token, ',');
+            books[bookCount].id = stoi(token);
+
+            getline(ss, books[bookCount].title, ',');
+
+            getline(ss, books[bookCount].author, ',');
+
+            getline(ss, token, ',');
+            books[bookCount].isBorrowed = stoi(token);
+
+            bookCount++;
+        }
+        fin.close();
+    }
+
+    void saveStudents() {
+        ofstream fout("students.csv");
+        for (int i = 0; i < studentCount; i++)
+            fout << students[i].studentID << "," << students[i].name << ","
+                 << students[i].hasBorrowed << "," << students[i].borrowedBookID << endl;
+        fout.close();
+    }
+
+    void loadStudents() {
+        ifstream fin("students.csv");
+        if (!fin) return;
+
+        string line;
+        while (getline(fin, line)) {
+            if (line.empty()) continue;
+
+            stringstream ss(line);
+            string token;
+
+            getline(ss, token, ',');
+            students[studentCount].studentID = stoi(token);
+
+            getline(ss, students[studentCount].name, ',');
+
+            getline(ss, token, ',');
+            students[studentCount].hasBorrowed = stoi(token);
+
+            getline(ss, token, ',');
+            students[studentCount].borrowedBookID = stoi(token);
+
+            studentCount++;
+        }
+        fin.close();
+    }
+
+    int findBook(int id) {
+        for (int i = 0; i < bookCount; i++)
+            if (books[i].id == id) return i;
+        return -1;
+    }
+
+    int findStudent(int id) {
+        for (int i = 0; i < studentCount; i++)
+            if (students[i].studentID == id) return i;
+        return -1;
+    }
+};
+
+// MAIN
+int main() {
+    Library lib;
+    int choice;
+
+    do {
+        cout << "\n<--------------: LIBRARY MANAGEMENT SYSTEM :-------------------->\n";
+        cout << "\t\t\t1. Add Book\n";
+        cout << "\t\t\t2. Display Books\n";
+        cout << "\t\t\t3. Add Student\n";
+        cout << "\t\t\t4. Display Students\n";
+        cout << "\t\t\t5. Borrow Book\n";
+        cout << "\t\t\t6. Return Book\n";
+        cout << "\t\t\t0. Exit\n";
+        cout << "\t\t\tEnter choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: lib.addBook(); break;
+            case 2: lib.displayBooks(); break;
+            case 3: lib.addStudent(); break;
+            case 4: lib.displayStudents(); break;
+            case 5: lib.borrowBook(); break;
+            case 6: lib.returnBook(); break;
+            case 0: cout << "\t\t\tExiting...\n"; break;
+            default: cout << "\t\t\tInvalid choice!\n";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
