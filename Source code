@@ -22,7 +22,7 @@ public:
         cout << "Title: " << title << endl;
         cout << "Author: " << author << endl;
         cout << "Status: " << (isBorrowed ? "Unavailable" : "Available") << endl;
-        cout << "-----------------------------\n";
+        cout << "\n";
     }
 };
 
@@ -41,7 +41,7 @@ public:
             cout << "Borrowed Book ID: " << borrowedBookID << endl;
         else
             cout << "Borrowed Book ID: None" << endl;
-        cout << "-----------------------------\n";
+        cout << "\n";
     }
 };
 
@@ -117,7 +117,6 @@ public:
         for (int i = 0; i < studentCount; i++)
             students[i].display();
     }
-
     // BORROW BOOK
     void borrowBook() {
         int sid, bid;
@@ -129,57 +128,44 @@ public:
             cout << "Student not found!\n";
             return;
         }
-
         if (students[sIndex].hasBorrowed) {
             cout << "Student already borrowed a book.\n";
             return;
         }
-
-        cout << "Enter Book ID: ";
+        cout<< "Enter Book ID: ";
         cin >> bid;
-
         int bIndex = findBook(bid);
         if (bIndex == -1 || books[bIndex].isBorrowed) {
             cout << "Book unavailable.\n";
             return;
         }
-
         books[bIndex].isBorrowed = true;
         students[sIndex].hasBorrowed = true;
         students[sIndex].borrowedBookID = bid;
-
         saveBooks();
         saveStudents();
-
         cout << "Book issued successfully\n";
     }
-
     // RETURN BOOK
     void returnBook() {
         int sid;
         cout << "Enter Student ID: ";
         cin >> sid;
-
         int sIndex = findStudent(sid);
         if (sIndex == -1 || !students[sIndex].hasBorrowed) {
             cout << "Invalid return\n";
             return;
         }
-
         int bid = students[sIndex].borrowedBookID;
         int bIndex = findBook(bid);
         if (bIndex == -1) return;
-
         books[bIndex].isBorrowed = false;
         students[sIndex].hasBorrowed = false;
         students[sIndex].borrowedBookID = -1;
-
         saveBooks();
         saveStudents();
-
         cout << "Book returned successfully\n";
     }
-
     // FILE HANDLING
     void saveBooks() {
         ofstream fout("books.csv");
@@ -192,7 +178,6 @@ public:
     void loadBooks() {
         ifstream fin("books.csv");
         if (!fin) return;
-
         string line;
         while (getline(fin, line)) {
             if (line.empty()) continue;
