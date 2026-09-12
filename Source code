@@ -21,7 +21,7 @@ public:
         cout << "\n";
     }
 };
-
+ 
 // STUDENT CLASS
 class Student {
 public:
