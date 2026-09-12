@@ -2,13 +2,10 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-
 using namespace std;
-
 // CONSTANTS
 const int MAX_BOOKS = 100;
 const int MAX_STUDENTS = 100;
-
 // BOOK CLASS
 class Book {
 public:
@@ -16,7 +13,6 @@ public:
     string title;
     string author;
     bool isBorrowed;
-
     void display() {
         cout << "Book ID: " << id << endl;
         cout << "Title: " << title << endl;
@@ -43,8 +39,7 @@ public:
             cout << "Borrowed Book ID: None" << endl;
         cout << "\n";
     }
-};
-
+}; 
 // LIBRARY CLASS
 class Library {
 private:
