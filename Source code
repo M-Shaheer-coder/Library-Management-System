@@ -28,7 +28,12 @@ public:
     int studentID;
     string name;
     bool hasBorrowed;
-    int borrowedBookID;
+    int borrowedBookID;                
+
+
+
+
+
 
     void display() {
         cout << "Student ID: " << studentID << endl;
