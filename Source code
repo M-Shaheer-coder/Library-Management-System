@@ -8,7 +8,7 @@ const int MAX_BOOKS = 100;
 const int MAX_STUDENTS = 100;
 // BOOK CLASS
 class Book {
-public:
+public:    
     int id;
     string title;
     string author;
