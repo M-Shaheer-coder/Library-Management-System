@@ -15,7 +15,7 @@ public:
     bool isBorrowed; 
     void display() {
         cout << "Book ID: " << id << endl;
-        cout << "Title: " << title << endl;         
+        cout << "Title: " << title << endl;               
         cout << "Author: " << author << endl;
         cout << "Status: " << (isBorrowed ? "Unavailable" : "Available") << endl;
         cout << "\n";
