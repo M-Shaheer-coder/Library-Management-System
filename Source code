@@ -6,7 +6,7 @@ using namespace std;
 // CONSTANTS
 const int MAX_BOOKS = 100;
 const int MAX_STUDENTS = 100;
-// BOOK CLASS
+//book class
 class Book {
 public:             
     int id;
